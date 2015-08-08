@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Adam Furmanek</authors>
+    <owners>Adam Furmanek</owners>
+	<licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/afish/MsfMilpSolver</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial version of the package</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>MSF MicrosoftSolverFoundation MILP ILP MilpManager MilpSolver</tags>
+  </metadata>
+</package>
