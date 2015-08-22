@@ -6,10 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.SolverFoundation.Services;
 using MilpManager.Abstraction;
-using MsfMilpManager.Implementation;
 using Domain = MilpManager.Abstraction.Domain;
 
-namespace MsfMilpSolver.Implementation
+namespace MsfMilpManager.Implementation
 {
     public class MsfMilpSolver : BaseMilpSolver
     {
