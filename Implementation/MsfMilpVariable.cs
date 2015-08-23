@@ -23,8 +23,8 @@ namespace MsfMilpManager.Implementation
             internal set { _baseMilpManager = value; }
         }
 
-        public string Name { get; private set; }
-        public Domain Domain { get; private set; }
+        public string Name { get; }
+        public Domain Domain { get; }
         public Decision Decision
         {
             get { return _decision; }
