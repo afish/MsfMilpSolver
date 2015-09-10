@@ -37,8 +37,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Microsoft.Solver.Foundation.dll</HintPath>
     </Reference>
-    <Reference Include="MilpManager, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MilpManager.1.1.0.0\lib\net45\MilpManager.dll</HintPath>
+    <Reference Include="MilpManager, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\MilpManager.1.1.1.0\lib\net45\MilpManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SolverSDKPlugIn, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
