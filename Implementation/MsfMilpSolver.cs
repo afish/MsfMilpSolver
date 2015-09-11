@@ -154,9 +154,9 @@ namespace MsfMilpManager.Implementation
                 Tuple.Create(_variables, _constraintIndex, _variableIndex));
         }
 
-        private void AddConstraint(Term term, [CallerFilePath] string prefix = "")
+        private void AddConstraint(Term term)
         {
-            Solver.AddConstraint("c_" + GetFilenameBase(prefix) + "_" + _constraintIndex++, term);
+            Solver.AddConstraint("c_" + _constraintIndex++, term);
         }
 
         private string GetFilenameBase(string name)
