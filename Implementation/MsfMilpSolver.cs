@@ -169,7 +169,7 @@ namespace MsfMilpManager.Implementation
             AddConstraint(((MsfMilpVariable) variable).Term >= ((MsfMilpVariable) bound).Term);
         }
 
-        protected override void InternalSetEqual(IVariable variable, IVariable bound)
+        public override void SetEqual(IVariable variable, IVariable bound)
         {
             AddConstraint(((MsfMilpVariable) variable).Term == ((MsfMilpVariable) bound).Term);
         }
