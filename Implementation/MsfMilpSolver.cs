@@ -123,6 +123,7 @@ namespace MsfMilpManager.Implementation
             using (var file = File.CreateText(modelPath))
             {
                 Context.SaveModel(FileFormat.FreeMPS, file);
+                file.Close();
             }
         }
 
@@ -130,15 +131,21 @@ namespace MsfMilpManager.Implementation
         {
             Context.ClearModel();
             Context.LoadModel(FileFormat.FreeMPS, modelPath);
-            var deserialized =
-                (Tuple<Dictionary<string, IVariable>, int, int>)
-                    new BinaryFormatter().Deserialize(File.Open(solverDataPath, FileMode.Open));
-            Variables = deserialized.Item1;
-            _constraintIndex = deserialized.Item2;
-            VariableIndex = deserialized.Item3;
-            foreach (var variable in Variables.Values.Cast<MsfMilpVariable>())
+            using (var serializationStream = File.Open(solverDataPath, FileMode.Open))
             {
-                variable.Decision = Context.CurrentModel.Decisions.First(d => d.Name == variable.Name);
+                Variables = (IDictionary<string, IVariable>)new BinaryFormatter().Deserialize(serializationStream);
+                _constraintIndex = Context.CurrentModel.Constraints.Count() + 1;
+                VariableIndex = Context.CurrentModel.Decisions.Count() + 1;
+            }
+            var msfMilpVariables = Variables.Values.Cast<MsfMilpVariable>().ToArray();
+            foreach (var variable in msfMilpVariables)
+            {
+                variable.Decision = Context.CurrentModel.Decisions.FirstOrDefault(d => d.Name == variable.Name);
+                if (null == (object) variable.Decision)
+                {
+                    Variables.Remove(variable.Name);
+                    continue;
+                }
                 variable.Term = variable.Decision*1;
                 variable.MilpManager = this;
             }
@@ -146,8 +153,10 @@ namespace MsfMilpManager.Implementation
 
         public override void SaveSolverDataToFile(string solverOutput)
         {
-            new BinaryFormatter().Serialize(File.Open(solverOutput, FileMode.Create),
-                Tuple.Create(Variables, _constraintIndex, VariableIndex));
+            using (var serializationStream = File.Open(solverOutput, FileMode.Create))
+            {
+                new BinaryFormatter().Serialize(serializationStream, Variables);
+            }
         }
 
         private void AddConstraint(Term term)
