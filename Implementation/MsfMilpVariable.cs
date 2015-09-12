@@ -16,20 +16,21 @@ namespace MsfMilpManager.Implementation
 
         [NonSerialized]
         private IMilpManager _baseMilpManager;
+        public double? ConstantValue { get; set; }
+        public Domain Domain { get; }
 
         public IMilpManager MilpManager
         {
             get { return _baseMilpManager; }
             internal set { _baseMilpManager = value; }
         }
-
-        public string Name { get; }
-        public Domain Domain { get; }
         public Decision Decision
         {
             get { return _decision; }
             internal set { _decision = value; }
         }
+
+        public string Name { get; }
 
         public Term Term
         {
@@ -37,7 +38,7 @@ namespace MsfMilpManager.Implementation
             internal set { _term = value; }
         }
 
-        protected internal MsfMilpVariable(IMilpManager milpManager, string name, Domain domain)
+        public MsfMilpVariable(IMilpManager milpManager, string name, Domain domain)
         {
             MilpManager = milpManager;
             Name = name;

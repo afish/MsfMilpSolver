@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.SolverFoundation.Services;
 using MilpManager.Abstraction;
@@ -13,8 +12,6 @@ namespace MsfMilpManager.Implementation
     public class MsfMilpSolver : BaseMilpSolver
     {
         private int _constraintIndex;
-        private int _variableIndex;
-        private Dictionary<string, IVariable> _variables = new Dictionary<string, IVariable>();
         private Solution _solution;
 
         public MsfMilpSolver(int integerWidth = 10)
@@ -34,9 +31,9 @@ namespace MsfMilpManager.Implementation
             get { return Context.CurrentModel; }
         }
 
-        public override IVariable FromConstant(int value, Domain domain)
+        protected override IVariable InternalFromConstant(string name, int value, Domain domain)
         {
-            var variable = new MsfMilpVariable(this, GetVariableName(),
+            var variable = new MsfMilpVariable(this, name,
                 domain)
             {
                 Term = 1*value
@@ -45,13 +42,13 @@ namespace MsfMilpManager.Implementation
             return variable;
         }
 
-        public override IVariable FromConstant(double value, Domain domain)
+        protected override IVariable InternalFromConstant(string name, double value, Domain domain)
         {
-            var variable = new MsfMilpVariable(this, GetVariableName(), domain) { Term = 1 * value };
+            var variable = new MsfMilpVariable(this, name, domain) { Term = 1 * value };
             return variable;
         }
 
-        public override IVariable Create(string name, Domain domain)
+        protected override IVariable InternalCreate(string name, Domain domain)
         {
             var variable = new MsfMilpVariable(this, name, domain);
             var msfDomain = (domain == Domain.BinaryConstantInteger ||
@@ -67,41 +64,40 @@ namespace MsfMilpManager.Implementation
             variable.Decision = new Decision(msfDomain, name);
             Solver.AddDecision(variable.Decision);
             variable.Term = 1*variable.Decision;
-            _variables[name] = variable;
 
             return variable;
         }
 
-        public override IVariable SumVariables(IVariable first, IVariable second, Domain domain)
+        protected override IVariable InternalSumVariables(IVariable first, IVariable second, Domain domain)
         {
             var firstVariable = (MsfMilpVariable) first;
             var secondVariable = (MsfMilpVariable) second;
-            return new MsfMilpVariable(this, GetVariableName(), domain)
+            return new MsfMilpVariable(this, NewVariableName(), domain)
             {
                 Term = firstVariable.Term + secondVariable.Term
             };
         }
 
-        public override IVariable NegateVariable(IVariable variable, Domain domain)
+        protected override IVariable InternalNegateVariable(IVariable variable, Domain domain)
         {
             var casted = (MsfMilpVariable) variable;
-            return new MsfMilpVariable(this, GetVariableName(), domain)
+            return new MsfMilpVariable(this, NewVariableName(), domain)
             {
                 Term = -casted.Term
             };
         }
 
-        public override IVariable MultiplyVariableByConstant(IVariable variable, IVariable constant, Domain domain)
+        protected override IVariable InternalMultiplyVariableByConstant(IVariable variable, IVariable constant, Domain domain)
         {
-            return new MsfMilpVariable(this, GetVariableName(), domain)
+            return new MsfMilpVariable(this, NewVariableName(), domain)
             {
                 Term = ((MsfMilpVariable) variable).Term*((MsfMilpVariable) constant).Term
             };
         }
 
-        public override IVariable DivideVariableByConstant(IVariable variable, IVariable constant, Domain domain)
+        protected override IVariable InternalDivideVariableByConstant(IVariable variable, IVariable constant, Domain domain)
         {
-            return new MsfMilpVariable(this, GetVariableName(), domain)
+            return new MsfMilpVariable(this, NewVariableName(), domain)
             {
                 Term = ((MsfMilpVariable) variable).Term/((MsfMilpVariable) constant).Term
             };
@@ -137,10 +133,10 @@ namespace MsfMilpManager.Implementation
             var deserialized =
                 (Tuple<Dictionary<string, IVariable>, int, int>)
                     new BinaryFormatter().Deserialize(File.Open(solverDataPath, FileMode.Open));
-            _variables = deserialized.Item1;
+            Variables = deserialized.Item1;
             _constraintIndex = deserialized.Item2;
-            _variableIndex = deserialized.Item3;
-            foreach (var variable in _variables.Values.Cast<MsfMilpVariable>())
+            VariableIndex = deserialized.Item3;
+            foreach (var variable in Variables.Values.Cast<MsfMilpVariable>())
             {
                 variable.Decision = Context.CurrentModel.Decisions.First(d => d.Name == variable.Name);
                 variable.Term = variable.Decision*1;
@@ -151,7 +147,7 @@ namespace MsfMilpManager.Implementation
         public override void SaveSolverDataToFile(string solverOutput)
         {
             new BinaryFormatter().Serialize(File.Open(solverOutput, FileMode.Create),
-                Tuple.Create(_variables, _constraintIndex, _variableIndex));
+                Tuple.Create(Variables, _constraintIndex, VariableIndex));
         }
 
         private void AddConstraint(Term term)
@@ -159,31 +155,14 @@ namespace MsfMilpManager.Implementation
             Solver.AddConstraint("c_" + _constraintIndex++, term);
         }
 
-        private string GetFilenameBase(string name)
-        {
-            return Path.GetFileNameWithoutExtension(name);
-        }
-
         public override void SetGreaterOrEqual(IVariable variable, IVariable bound)
         {
             AddConstraint(((MsfMilpVariable) variable).Term >= ((MsfMilpVariable) bound).Term);
         }
 
-        public override void SetEqual(IVariable variable, IVariable bound)
+        protected override void InternalSetEqual(IVariable variable, IVariable bound)
         {
             AddConstraint(((MsfMilpVariable) variable).Term == ((MsfMilpVariable) bound).Term);
-        }
-
-        public override IVariable GetByName(string name)
-        {
-            return _variables[name];
-        }
-
-        public override IVariable TryGetByName(string name)
-        {
-            IVariable result;
-            _variables.TryGetValue(name, out result);
-            return result;
         }
 
         public override void Solve()
@@ -223,16 +202,6 @@ namespace MsfMilpManager.Implementation
 
             return SolutionStatus.Unknown;
 
-        }
-
-        private string GetVariableName(string prefix = "")
-        {
-            return prefix + "v_" + "_" + _variableIndex++;
-        }
-
-        public override IVariable CreateAnonymous(Domain domain)
-        {
-            return Create(GetVariableName(), domain);
         }
     }
 }
