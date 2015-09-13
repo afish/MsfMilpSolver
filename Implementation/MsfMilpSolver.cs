@@ -120,43 +120,37 @@ namespace MsfMilpManager.Implementation
 
         public override void SaveModelToFile(string modelPath)
         {
-            using (var file = File.CreateText(modelPath))
+            using (var fileWriter = File.CreateText(modelPath))
             {
-                Context.SaveModel(FileFormat.FreeMPS, file);
-                file.Close();
+                Context.SaveModel(FileFormat.FreeMPS, fileWriter);
             }
         }
 
-        public override void LoadModelFromFile(string modelPath, string solverDataPath)
+        protected override object GetObjectsToSerialize()
         {
-            Context.ClearModel();
-            Context.LoadModel(FileFormat.FreeMPS, modelPath);
-            using (var serializationStream = File.Open(solverDataPath, FileMode.Open))
-            {
-                Variables = (IDictionary<string, IVariable>)new BinaryFormatter().Deserialize(serializationStream);
-                _constraintIndex = Context.CurrentModel.Constraints.Count() + 1;
-                VariableIndex = Context.CurrentModel.Decisions.Count() + 1;
-            }
+            return null;
+        }
+
+        protected override void InternalDeserialize(object o)
+        {
+            _constraintIndex = Context.CurrentModel.Constraints.Count() + 1;
             var msfMilpVariables = Variables.Values.Cast<MsfMilpVariable>().ToArray();
             foreach (var variable in msfMilpVariables)
             {
                 variable.Decision = Context.CurrentModel.Decisions.FirstOrDefault(d => d.Name == variable.Name);
-                if (null == (object) variable.Decision)
+                if (null == (object)variable.Decision)
                 {
                     Variables.Remove(variable.Name);
                     continue;
                 }
-                variable.Term = variable.Decision*1;
-                variable.MilpManager = this;
+                variable.Term = variable.Decision * 1;
             }
         }
 
-        public override void SaveSolverDataToFile(string solverOutput)
+        protected override void InternalLoadModelFromFile(string modelPath)
         {
-            using (var serializationStream = File.Open(solverOutput, FileMode.Create))
-            {
-                new BinaryFormatter().Serialize(serializationStream, Variables);
-            }
+            Context.ClearModel();
+            Context.LoadModel(FileFormat.FreeMPS, modelPath);
         }
 
         private void AddConstraint(Term term)

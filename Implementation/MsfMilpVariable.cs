@@ -22,7 +22,7 @@ namespace MsfMilpManager.Implementation
         public IMilpManager MilpManager
         {
             get { return _baseMilpManager; }
-            internal set { _baseMilpManager = value; }
+            set { _baseMilpManager = value; }
         }
         public Decision Decision
         {
