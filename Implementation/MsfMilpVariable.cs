@@ -17,7 +17,8 @@ namespace MsfMilpManager.Implementation
         [NonSerialized]
         private IMilpManager _baseMilpManager;
         public double? ConstantValue { get; set; }
-        public Domain Domain { get; }
+        public string Expression { get; set; }
+        public Domain Domain { get; set;  }
 
         public IMilpManager MilpManager
         {
@@ -30,7 +31,7 @@ namespace MsfMilpManager.Implementation
             internal set { _decision = value; }
         }
 
-        public string Name { get; }
+        public string Name { get; set;  }
 
         public Term Term
         {

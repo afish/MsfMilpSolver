@@ -106,7 +106,7 @@ namespace MsfMilpManager.Implementation
             AddConstraint(((MsfMilpVariable) variable).Term <= ((MsfMilpVariable) bound).Term);
         }
 
-        public override void AddGoal(string name, IVariable operation)
+        protected override void InternalAddGoal(string name, IVariable operation)
         {
             Solver.AddGoal(name, GoalKind.Maximize, ((MsfMilpVariable)operation).Term);
         }
