@@ -44,5 +44,10 @@ namespace MsfMilpManager.Implementation
             Name = name;
             Domain = domain;
         }
+
+        public override string ToString()
+        {
+            return $"[Name = {Name}, Domain = {Domain}, ConstantValue = {ConstantValue}, Term = {Term}, Decision = {Decision}]";
+        }
     }
 }

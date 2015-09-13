@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.SolverFoundation.Services;
 using MilpManager.Abstraction;
 using Domain = MilpManager.Abstraction.Domain;
