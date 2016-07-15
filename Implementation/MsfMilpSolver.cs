@@ -12,8 +12,8 @@ namespace MsfMilpManager.Implementation
         private int _constraintIndex;
         private Solution _solution;
 
-        public MsfMilpSolver(int integerWidth = 10)
-            : base(integerWidth)
+        public MsfMilpSolver(int integerWidth = 10, double epsilon = 0.000000001)
+            : base(integerWidth, epsilon)
         {
             Context.ClearModel();
             Context.CreateModel();
