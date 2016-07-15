@@ -129,7 +129,7 @@ namespace MsfMilpManager.Implementation
             return null;
         }
 
-        protected override void InternalDeserialize(object o)
+        protected override void InternalDeserialize(object data)
         {
             _constraintIndex = Context.CurrentModel.Constraints.Count() + 1;
             var msfMilpVariables = Variables.Values.Cast<MsfMilpVariable>().ToArray();
