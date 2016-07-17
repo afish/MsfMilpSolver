@@ -10,7 +10,11 @@
     <projectUrl>https://github.com/afish/MsfMilpSolver</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <copyright>Copyright 2015</copyright>
-    <tags>MSF MicrosoftSolverFoundation MILP ILP MilpManager MilpSolver</tags>
+    <releaseNotes>Version 1.4.0.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>MSF MicrosoftSolverFoundation MILP ILP MilpManager MilpSolver</tags>	
+	<dependencies>
+	  <dependency id="MilpManager" version="2.0.0" />
+	</dependencies>
   </metadata>
 </package>
