@@ -12,22 +12,19 @@ namespace MsfMilpManager.Implementation
         private int _constraintIndex;
         private Solution _solution;
 
-        public MsfMilpSolver(int integerWidth = 10, double epsilon = 0.000000001)
+        public MsfMilpSolver(int integerWidth = 10, double epsilon = 0.000000001, bool recreateModel = true)
             : base(integerWidth, epsilon)
         {
-            Context.ClearModel();
-            Context.CreateModel();
+            if (recreateModel)
+            {
+                Context.ClearModel();
+                Context.CreateModel();
+            }
         }
 
-        public SolverContext Context
-        {
-            get { return SolverContext.GetContext(); }
-        }
+        public SolverContext Context => SolverContext.GetContext();
 
-        public Model Solver
-        {
-            get { return Context.CurrentModel; }
-        }
+        public Model Solver => Context.CurrentModel;
 
         protected override IVariable InternalFromConstant(string name, int value, Domain domain)
         {
