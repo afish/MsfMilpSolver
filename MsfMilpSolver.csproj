@@ -84,9 +84,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\FreeMpsSettings.cs" />
+    <Compile Include="Implementation\IMsfMilpVariable.cs" />
+    <Compile Include="Implementation\MpsSettings.cs" />
     <Compile Include="Implementation\MsfMilpSolverSettings.cs" />
     <Compile Include="Implementation\MsfMilpSolver.cs" />
     <Compile Include="Implementation\MsfMilpVariable.cs" />
+    <Compile Include="Implementation\OmlSettings.cs" />
+    <Compile Include="Implementation\SmpsSettings.cs" />
+    <Compile Include="Implementation\TextWriterSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
