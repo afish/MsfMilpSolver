@@ -7,7 +7,7 @@ using Domain = MilpManager.Abstraction.Domain;
 
 namespace MsfMilpManager.Implementation
 {
-	public class MsfMilpSolver : BaseMilpSolver, IModelSaver<MpsSettings>, IModelSaver<FreeMpsSettings>, IModelSaver<SmpsSettings>, IModelSaver<OmlSettings>
+	public class MsfMilpSolver : PersistableMilpSolver, IModelSaver<MpsSettings>, IModelSaver<FreeMpsSettings>, IModelSaver<SmpsSettings>, IModelSaver<OmlSettings>
 	{
 		private int _constraintIndex;
 
