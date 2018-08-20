@@ -4,11 +4,11 @@ namespace MsfMilpManager.Implementation
 {
 	public class MsfMilpSolverSettings : MilpManagerSettings
 	{
-		public MsfMilpSolverSettings()
+		public MsfMilpSolverSettings(bool recreateModelAtStart = true)
 		{
-			RecreateModelAtStart = true;
+		    RecreateModelAtStart = recreateModelAtStart;
 		}
 
-		public bool RecreateModelAtStart { get; set; }
+		public bool RecreateModelAtStart { get; }
 	}
 }
