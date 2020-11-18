@@ -35,7 +35,7 @@ namespace MsfMilpManager.Implementation
 			var variable = new MsfMilpVariable(this, name,
 				domain)
 			{
-				Term = 1*value
+				Term = value
 			};
 
 			return variable;
@@ -43,26 +43,51 @@ namespace MsfMilpManager.Implementation
 
 		protected override IVariable InternalFromConstant(string name, double value, Domain domain)
 		{
-			var variable = new MsfMilpVariable(this, name, domain) { Term = 1 * value };
+			var variable = new MsfMilpVariable(this, name, domain) { Term = value };
 			return variable;
 		}
 
 		protected override IVariable InternalCreate(string name, Domain domain)
 		{
 			var variable = new MsfMilpVariable(this, name, domain);
-			var msfDomain = (domain == Domain.BinaryConstantInteger ||
+
+			if (Settings.FixBrokenRanges)
+			{
+				var msfDomain = domain == Domain.PositiveOrZeroReal || domain == Domain.PositiveOrZeroConstantReal || domain == Domain.AnyReal || domain == Domain.AnyConstantReal
+								? Microsoft.SolverFoundation.Services.Domain.Real
+								: Microsoft.SolverFoundation.Services.Domain.Integer;
+				variable.Decision = new Decision(msfDomain, name);
+				Solver.AddDecision(variable.Decision);
+				variable.Term = variable.Decision;
+
+				if (domain == Domain.BinaryConstantInteger || domain == Domain.BinaryInteger ||
+					domain == Domain.PositiveOrZeroConstantInteger || domain == Domain.PositiveOrZeroInteger ||
+						domain == Domain.PositiveOrZeroConstantReal || domain == Domain.PositiveOrZeroReal)
+				{
+					AddConstraint(variable.Term >= 0);
+				}
+
+				if (domain == Domain.BinaryConstantInteger || domain == Domain.BinaryInteger)
+				{
+					AddConstraint(variable.Term <= 1);
+				}
+			}
+			else
+			{
+				var msfDomain = (domain == Domain.BinaryConstantInteger ||
 							 domain == Domain.BinaryInteger)
 				? Microsoft.SolverFoundation.Services.Domain.Boolean
 				: (domain == Domain.PositiveOrZeroConstantInteger || domain == Domain.PositiveOrZeroInteger)
-					? Microsoft.SolverFoundation.Services.Domain.IntegerRange(0, Int64.MaxValue)
+					? Microsoft.SolverFoundation.Services.Domain.IntegerNonnegative
 					: (domain == Domain.PositiveOrZeroConstantReal || domain == Domain.PositiveOrZeroReal)
 						? Microsoft.SolverFoundation.Services.Domain.RealNonnegative
 						: (domain == Domain.AnyConstantInteger || domain == Domain.AnyInteger)
-							? Microsoft.SolverFoundation.Services.Domain.IntegerRange(Int64.MinValue, Int64.MaxValue)
+							? Microsoft.SolverFoundation.Services.Domain.Integer
 							: Microsoft.SolverFoundation.Services.Domain.Real;
-			variable.Decision = new Decision(msfDomain, name);
-			Solver.AddDecision(variable.Decision);
-			variable.Term = 1*variable.Decision;
+				variable.Decision = new Decision(msfDomain, name);
+				Solver.AddDecision(variable.Decision);
+				variable.Term = variable.Decision;
+			}
 
 			return variable;
 		}
@@ -194,7 +219,7 @@ namespace MsfMilpManager.Implementation
 
 		public override double GetValue(IVariable variable)
 		{
-			return double.Parse(((IMsfMilpVariable)variable).Decision.ToString());
+			return ((IMsfMilpVariable)variable).Decision.ToDouble();
 		}
 
 		public override SolutionStatus GetStatus()
